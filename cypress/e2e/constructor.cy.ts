@@ -1,3 +1,9 @@
+/// <reference types="cypress" />
+
+// Импорты констант из редьюсеров для использования в тестах
+import { initialState as constructorInitialState } from '../../src/services/slices/constructorSlice';
+import { initialState as orderInitialState } from '../../src/services/slices/orderSlice';
+
 // Константы для тестов
 const INGREDIENT_IDS = {
   BUN: '643d69a5c3f7b9001cfa093c',
@@ -27,7 +33,7 @@ const SELECTORS = {
 
 describe('Конструктор бургера', () => {
   beforeEach(() => {
-    // Перехватываем запросы к API
+    // Перехватываем запросы к API с алиасами для лучшего контроля
     cy.intercept('GET', 'api/ingredients', { fixture: 'ingredients.json' }).as('getIngredients');
     cy.intercept('GET', 'api/auth/user', { fixture: 'user.json' }).as('getUser');
     cy.intercept('POST', 'api/orders', { fixture: 'order.json' }).as('createOrder');
@@ -35,69 +41,92 @@ describe('Конструктор бургера', () => {
     // Открываем страницу конструктора
     cy.visit('/');
     
-    // Ждем загрузки ингредиентов
+    // Ждем загрузки ингредиентов - используем алиас вместо произвольного ожидания
     cy.wait('@getIngredients');
   });
 
   describe('Добавление ингредиентов в конструктор', () => {
-    it('должен добавить булку в конструктор', () => {
-      // Проверяем, что булки нет в конструкторе до добавления
+    it('должен добавить булку в конструктор и проверить её наличие', () => {
+      // Проверяем, что конструктор в начальном состоянии
       cy.get(SELECTORS.CONSTRUCTOR_BUN_TOP).should('not.exist');
       cy.get(SELECTORS.CONSTRUCTOR_BUN_BOTTOM).should('not.exist');
       
-      // Получаем название булки для проверки
-      cy.get(SELECTORS.BUN_ITEM).first().find(SELECTORS.INGREDIENT_NAME).invoke('text').then((bunName) => {
-        // Добавляем булку
-        cy.addBunToConstructor();
-        
-        // Проверяем, что именно эта булка появилась в конструкторе
-        cy.get(SELECTORS.CONSTRUCTOR_BUN_TOP).should('be.visible').and('contain.text', bunName);
-        cy.get(SELECTORS.CONSTRUCTOR_BUN_BOTTOM).should('be.visible').and('contain.text', bunName);
+      // Получаем название булки для детальной проверки
+      cy.get(SELECTORS.BUN_ITEM).first().find(SELECTORS.INGREDIENT_NAME).invoke('text').as('bunName');
+      
+      // Добавляем булку
+      cy.addBunToConstructor();
+      
+      // Проверяем, что именно эта булка появилась в конструкторе с полной детализацией
+      cy.get('@bunName').then((bunName) => {
+        cy.get(SELECTORS.CONSTRUCTOR_BUN_TOP)
+          .should('be.visible')
+          .and('contain.text', bunName);
+        cy.get(SELECTORS.CONSTRUCTOR_BUN_BOTTOM)
+          .should('be.visible')
+          .and('contain.text', bunName);
       });
     });
 
-    it('должен добавить начинку в конструктор', () => {
-      // Проверяем, что начинки нет в конструкторе до добавления
+    it('должен добавить начинку в конструктор и проверить её наличие', () => {
+      // Проверяем, что конструктор в начальном состоянии
       cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT).should('not.exist');
       
-      // Получаем название начинки для проверки
-      cy.get(SELECTORS.MAIN_ITEM).first().find(SELECTORS.INGREDIENT_NAME).invoke('text').then((ingredientName) => {
-        // Добавляем начинку
-        cy.addMainIngredientToConstructor();
-        
-        // Проверяем, что именно эта начинка появилась в конструкторе
-        cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT).should('be.visible').and('contain.text', ingredientName);
+      // Получаем название начинки для детальной проверки
+      cy.get(SELECTORS.MAIN_ITEM).first().find(SELECTORS.INGREDIENT_NAME).invoke('text').as('ingredientName');
+      
+      // Добавляем начинку
+      cy.addMainIngredientToConstructor();
+      
+      // Проверяем, что именно эта начинка появилась в конструкторе
+      cy.get('@ingredientName').then((ingredientName) => {
+        cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
+          .should('be.visible')
+          .and('contain.text', ingredientName);
       });
     });
 
-    it('должен добавить соус в конструктор', () => {
-      // Проверяем, что соуса нет в конструкторе до добавления
+    it('должен добавить соус в конструктор и проверить его наличие', () => {
+      // Проверяем, что конструктор в начальном состоянии
       cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT).should('not.exist');
       
-      // Получаем название соуса для проверки
-      cy.get(SELECTORS.SAUCE_ITEM).first().find(SELECTORS.INGREDIENT_NAME).invoke('text').then((sauceName) => {
-        // Добавляем соус
-        cy.addSauceToConstructor();
-        
-        // Проверяем, что именно этот соус появился в конструкторе
-        cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT).should('be.visible').and('contain.text', sauceName);
+      // Получаем название соуса для детальной проверки
+      cy.get(SELECTORS.SAUCE_ITEM).first().find(SELECTORS.INGREDIENT_NAME).invoke('text').as('sauceName');
+      
+      // Добавляем соус
+      cy.addSauceToConstructor();
+      
+      // Проверяем, что именно этот соус появился в конструкторе
+      cy.get('@sauceName').then((sauceName) => {
+        cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT)
+          .should('be.visible')
+          .and('contain.text', sauceName);
       });
     });
   });
 
   describe('Модальные окна ингредиентов', () => {
-    it('должен открыть модальное окно при клике на ингредиент', () => {
+    it('должен открыть модальное окно при клике на ингредиент и проверить его содержимое', () => {
+      // Открываем модальное окно
       cy.openIngredientModal();
+      
+      // Проверяем заголовок и содержимое модального окна
       cy.get(SELECTORS.MODAL_TITLE).should('contain', 'Детали ингредиента');
+      
+      // Проверяем, что модальное окно содержит данные ингредиента
+      cy.get(SELECTORS.MODAL_INGREDIENT_NAME).should('be.visible');
     });
 
     it('должен закрыть модальное окно при клике на крестик', () => {
       cy.openIngredientModal();
+      cy.get(SELECTORS.MODAL).should('be.visible');
       cy.closeModal();
+      cy.get(SELECTORS.MODAL).should('not.exist');
     });
 
     it('должен закрыть модальное окно при клике на оверлей', () => {
       cy.openIngredientModal();
+      cy.get(SELECTORS.MODAL).should('be.visible');
       cy.get(SELECTORS.MODAL_OVERLAY).click({ force: true });
       cy.get(SELECTORS.MODAL).should('not.exist');
     });
@@ -134,8 +163,14 @@ describe('Конструктор бургера', () => {
       cy.addBunToConstructor();
       cy.addMainIngredientToConstructor();
       
+      // Проверяем, что кнопка заказа активна
+      cy.get(SELECTORS.ORDER_BUTTON).should('not.be.disabled');
+      
       // Создаем заказ
       cy.createOrder();
+      
+      // Проверяем, что модальное окно заказа открылось
+      cy.get(SELECTORS.ORDER_MODAL).should('be.visible');
       
       // Проверяем, что номер заказа отображается
       cy.get(SELECTORS.ORDER_NUMBER).should('be.visible');
@@ -149,12 +184,24 @@ describe('Конструктор бургера', () => {
       // Создаем заказ
       cy.createOrder();
       
-      // Ждем создания заказа
+      // Ждем создания заказа - используем алиас вместо произвольного ожидания
       cy.wait('@createOrder');
       
       // Проверяем, что отображается корректный номер заказа
       cy.fixture('order.json').then((orderData) => {
-        cy.get(SELECTORS.ORDER_NUMBER).should('contain.text', orderData.order.number);
+        cy.get(SELECTORS.ORDER_NUMBER)
+          .should('be.visible')
+          .and('contain.text', orderData.order.number);
+      });
+      
+      // Проверяем, что состояние заказа соответствует ожидаемому
+      cy.window().then((win) => {
+        // Проверяем, что в Redux store состояние заказа обновилось
+        const store = win.__REDUX_DEVTOOLS_EXTENSION__?.connect()?.getState();
+        if (store) {
+          expect(store.order.order).to.not.be.null;
+          expect(store.order.order.number).to.equal(12345);
+        }
       });
     });
 
