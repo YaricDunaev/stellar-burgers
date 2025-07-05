@@ -1,4 +1,4 @@
-name: CI Checks
+name: Проверки CI
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build_and_test:
-    name: Build and Test
+    name: Сборка и тестирование
     runs-on: ubuntu-latest
 
     strategy:
@@ -16,7 +16,7 @@ jobs:
         node-version: [18.x]
 
     steps:
-    - name: Чекаут репозитория
+    - name: Клонирование репозитория
       uses: actions/checkout@v4
 
     - name: Установка Node.js ${{ matrix.node-version }}
