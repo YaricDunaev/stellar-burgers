@@ -18,12 +18,12 @@ describe('Конструктор бургера', () => {
       cy.get('[data-testid="ingredient-item"][data-ingredient-type="bun"]').first().trigger('dragstart', {
         dataTransfer: {
           setData: () => {},
-          getData: () => 'bun'
+          getData: () => '643d69a5c3f7b9001cfa093c'
         }
       });
       cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
         dataTransfer: {
-          getData: () => 'bun'
+          getData: () => '643d69a5c3f7b9001cfa093c'
         }
       });
       
@@ -37,12 +37,12 @@ describe('Конструктор бургера', () => {
       cy.get('[data-testid="ingredient-item"][data-ingredient-type="main"]').first().trigger('dragstart', {
         dataTransfer: {
           setData: () => {},
-          getData: () => 'main'
+          getData: () => '643d69a5c3f7b9001cfa093e'
         }
       });
       cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
         dataTransfer: {
-          getData: () => 'main'
+          getData: () => '643d69a5c3f7b9001cfa093e'
         }
       });
       
@@ -55,12 +55,12 @@ describe('Конструктор бургера', () => {
       cy.get('[data-testid="ingredient-item"][data-ingredient-type="sauce"]').first().trigger('dragstart', {
         dataTransfer: {
           setData: () => {},
-          getData: () => 'sauce'
+          getData: () => '643d69a5c3f7b9001cfa0942'
         }
       });
       cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
         dataTransfer: {
-          getData: () => 'sauce'
+          getData: () => '643d69a5c3f7b9001cfa0942'
         }
       });
       
@@ -137,12 +137,12 @@ describe('Конструктор бургера', () => {
       cy.get('[data-testid="ingredient-item"][data-ingredient-type="bun"]').first().trigger('dragstart', {
         dataTransfer: {
           setData: () => {},
-          getData: () => 'bun'
+          getData: () => '643d69a5c3f7b9001cfa093c'
         }
       });
       cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
         dataTransfer: {
-          getData: () => 'bun'
+          getData: () => '643d69a5c3f7b9001cfa093c'
         }
       });
       
@@ -150,12 +150,12 @@ describe('Конструктор бургера', () => {
       cy.get('[data-testid="ingredient-item"][data-ingredient-type="main"]').first().trigger('dragstart', {
         dataTransfer: {
           setData: () => {},
-          getData: () => 'main'
+          getData: () => '643d69a5c3f7b9001cfa093e'
         }
       });
       cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
         dataTransfer: {
-          getData: () => 'main'
+          getData: () => '643d69a5c3f7b9001cfa093e'
         }
       });
       
@@ -177,37 +177,38 @@ describe('Конструктор бургера', () => {
       cy.get('[data-testid="ingredient-item"][data-ingredient-type="bun"]').first().trigger('dragstart', {
         dataTransfer: {
           setData: () => {},
-          getData: () => 'bun'
+          getData: () => '643d69a5c3f7b9001cfa093c'
         }
       });
       cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
         dataTransfer: {
-          getData: () => 'bun'
+          getData: () => '643d69a5c3f7b9001cfa093c'
         }
       });
       cy.get('[data-testid="ingredient-item"][data-ingredient-type="main"]').first().trigger('dragstart', {
         dataTransfer: {
           setData: () => {},
-          getData: () => 'main'
+          getData: () => '643d69a5c3f7b9001cfa093e'
         }
       });
       cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
         dataTransfer: {
-          getData: () => 'main'
+          getData: () => '643d69a5c3f7b9001cfa093e'
         }
       });
       
       // Создаем заказ
       cy.get('[data-testid="order-button"]').click();
-      
-      // Проверяем, что модальное окно открылось
       cy.get('[data-testid="order-modal"]').should('be.visible');
       
-      // Закрываем модальное окно
+      // Ждем создания заказа
+      cy.wait('@createOrder');
+      
+      // Закрываем модальное окно заказа
       cy.get('[data-testid="modal-close"]').click();
       
-      // Проверяем, что модальное окно закрылось
-      cy.get('[data-testid="modal"]').should('not.exist');
+      // Проверяем, что модальное окно заказа закрылось
+      cy.get('[data-testid="order-modal"]').should('not.exist');
       
       // Проверяем, что конструктор очистился
       cy.get('[data-testid="constructor-bun-top"]').should('not.exist');
