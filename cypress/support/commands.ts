@@ -1,5 +1,12 @@
 /// <reference types="cypress" />
 
+// Константы для ID ингредиентов
+const INGREDIENT_IDS = {
+  BUN: '643d69a5c3f7b9001cfa093c',
+  MAIN: '643d69a5c3f7b9001cfa093e',
+  SAUCE: '643d69a5c3f7b9001cfa0942'
+} as const;
+
 // Drag and drop ингредиента по селектору и id
 Cypress.Commands.add('dragIngredientToConstructor', (ingredientSelector: string, ingredientId: string) => {
     cy.get(ingredientSelector).first().trigger('dragstart', {
@@ -38,17 +45,17 @@ Cypress.Commands.add('dragIngredientToConstructor', (ingredientSelector: string,
 
   // Добавление булки в конструктор
   Cypress.Commands.add('addBunToConstructor', () => {
-    cy.dragIngredientToConstructor('[data-testid="ingredient-item"][data-ingredient-type="bun"]', '643d69a5c3f7b9001cfa093c');
+    cy.dragIngredientToConstructor('[data-testid="ingredient-item"][data-ingredient-type="bun"]', INGREDIENT_IDS.BUN);
   });
 
   // Добавление начинки в конструктор
   Cypress.Commands.add('addMainIngredientToConstructor', () => {
-    cy.dragIngredientToConstructor('[data-testid="ingredient-item"][data-ingredient-type="main"]', '643d69a5c3f7b9001cfa093e');
+    cy.dragIngredientToConstructor('[data-testid="ingredient-item"][data-ingredient-type="main"]', INGREDIENT_IDS.MAIN);
   });
 
   // Добавление соуса в конструктор
   Cypress.Commands.add('addSauceToConstructor', () => {
-    cy.dragIngredientToConstructor('[data-testid="ingredient-item"][data-ingredient-type="sauce"]', '643d69a5c3f7b9001cfa0942');
+    cy.dragIngredientToConstructor('[data-testid="ingredient-item"][data-ingredient-type="sauce"]', INGREDIENT_IDS.SAUCE);
   });
 
   // Создание заказа

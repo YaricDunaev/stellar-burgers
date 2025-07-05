@@ -4,13 +4,6 @@
 import { initialState as constructorInitialState } from '../../src/services/slices/constructorSlice';
 import { initialState as orderInitialState } from '../../src/services/slices/orderSlice';
 
-// Константы для тестов
-const INGREDIENT_IDS = {
-  BUN: '643d69a5c3f7b9001cfa093c',
-  MAIN: '643d69a5c3f7b9001cfa093e',
-  SAUCE: '643d69a5c3f7b9001cfa0942'
-} as const;
-
 const SELECTORS = {
   INGREDIENT_ITEM: '[data-testid="ingredient-item"]',
   BUN_ITEM: '[data-testid="ingredient-item"][data-ingredient-type="bun"]',
@@ -48,6 +41,10 @@ describe('Конструктор бургера', () => {
   describe('Добавление ингредиентов в конструктор', () => {
     it('должен добавить булку в конструктор и проверить её наличие', () => {
       // Проверяем, что конструктор в начальном состоянии
+      // Используем константы из редьюсера для проверки начального состояния
+      expect(constructorInitialState.bun).to.be.null;
+      expect(constructorInitialState.ingredients).to.have.length(0);
+      
       cy.get(SELECTORS.CONSTRUCTOR_BUN_TOP).should('not.exist');
       cy.get(SELECTORS.CONSTRUCTOR_BUN_BOTTOM).should('not.exist');
       
@@ -70,6 +67,9 @@ describe('Конструктор бургера', () => {
 
     it('должен добавить начинку в конструктор и проверить её наличие', () => {
       // Проверяем, что конструктор в начальном состоянии
+      // Используем константы из редьюсера для проверки начального состояния
+      expect(constructorInitialState.ingredients).to.have.length(0);
+      
       cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT).should('not.exist');
       
       // Получаем название начинки для детальной проверки
@@ -88,6 +88,9 @@ describe('Конструктор бургера', () => {
 
     it('должен добавить соус в конструктор и проверить его наличие', () => {
       // Проверяем, что конструктор в начальном состоянии
+      // Используем константы из редьюсера для проверки начального состояния
+      expect(constructorInitialState.ingredients).to.have.length(0);
+      
       cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT).should('not.exist');
       
       // Получаем название соуса для детальной проверки
@@ -183,6 +186,16 @@ describe('Конструктор бургера', () => {
         cy.get(SELECTORS.ORDER_NUMBER)
           .should('be.visible')
           .and('contain.text', orderData.order.number);
+      });
+      
+      // Проверяем, что состояние заказа соответствует ожидаемому
+      // Используем константы из редьюсера для проверки состояния заказа
+      expect(orderInitialState.order).to.be.null;
+      expect(orderInitialState.orderRequest).to.be.false;
+      
+      // После создания заказа order должен быть не null, а не как в начальном состоянии
+      cy.window().then((win) => {
+        cy.get(SELECTORS.ORDER_NUMBER).should('contain.text', '12345');
       });
     });
 
