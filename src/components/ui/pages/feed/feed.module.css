@@ -5,6 +5,7 @@
   max-width: 1240px;
   margin-left: auto;
   margin-right: auto;
+  height: 100vh;
 }
 
 .titleBox {
@@ -18,17 +19,20 @@
 .main {
   display: flex;
   justify-content: space-between;
-  height: 100%;
+  height: calc(100vh - 120px);
   width: 1240px;
   overflow: hidden;
 }
 
 .columnOrders {
   width: 608px;
+  overflow-y: auto;
+  height: 100%;
 }
 
 .columnInfo {
   overflow-y: auto;
   overflow-x: hidden;
   width: 580px;
+  height: 100%;
 }
