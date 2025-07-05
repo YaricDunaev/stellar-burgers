@@ -41,18 +41,47 @@ describe('Конструктор бургера', () => {
 
   describe('Добавление ингредиентов в конструктор', () => {
     it('должен добавить булку в конструктор', () => {
-      cy.addBunToConstructor();
-      cy.checkBunAdded();
+      // Проверяем, что булки нет в конструкторе до добавления
+      cy.get(SELECTORS.CONSTRUCTOR_BUN_TOP).should('not.exist');
+      cy.get(SELECTORS.CONSTRUCTOR_BUN_BOTTOM).should('not.exist');
+      
+      // Получаем название булки для проверки
+      cy.get(SELECTORS.BUN_ITEM).first().find(SELECTORS.INGREDIENT_NAME).invoke('text').then((bunName) => {
+        // Добавляем булку
+        cy.addBunToConstructor();
+        
+        // Проверяем, что именно эта булка появилась в конструкторе
+        cy.get(SELECTORS.CONSTRUCTOR_BUN_TOP).should('be.visible').and('contain.text', bunName);
+        cy.get(SELECTORS.CONSTRUCTOR_BUN_BOTTOM).should('be.visible').and('contain.text', bunName);
+      });
     });
 
     it('должен добавить начинку в конструктор', () => {
-      cy.addMainIngredientToConstructor();
-      cy.checkIngredientAdded();
+      // Проверяем, что начинки нет в конструкторе до добавления
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT).should('not.exist');
+      
+      // Получаем название начинки для проверки
+      cy.get(SELECTORS.MAIN_ITEM).first().find(SELECTORS.INGREDIENT_NAME).invoke('text').then((ingredientName) => {
+        // Добавляем начинку
+        cy.addMainIngredientToConstructor();
+        
+        // Проверяем, что именно эта начинка появилась в конструкторе
+        cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT).should('be.visible').and('contain.text', ingredientName);
+      });
     });
 
     it('должен добавить соус в конструктор', () => {
-      cy.addSauceToConstructor();
-      cy.checkIngredientAdded();
+      // Проверяем, что соуса нет в конструкторе до добавления
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT).should('not.exist');
+      
+      // Получаем название соуса для проверки
+      cy.get(SELECTORS.SAUCE_ITEM).first().find(SELECTORS.INGREDIENT_NAME).invoke('text').then((sauceName) => {
+        // Добавляем соус
+        cy.addSauceToConstructor();
+        
+        // Проверяем, что именно этот соус появился в конструкторе
+        cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT).should('be.visible').and('contain.text', sauceName);
+      });
     });
   });
 
@@ -95,11 +124,9 @@ describe('Конструктор бургера', () => {
     });
 
     afterEach(() => {
-      // Очищаем токены после теста
-      cy.window().then((win) => {
-        win.localStorage.removeItem('refreshToken');
-        win.document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-      });
+      // Используем встроенные методы Cypress для очистки
+      cy.clearLocalStorage();
+      cy.clearCookies();
     });
 
     it('должен создать заказ и отобразить модальное окно с номером заказа', () => {
@@ -112,6 +139,23 @@ describe('Конструктор бургера', () => {
       
       // Проверяем, что номер заказа отображается
       cy.get(SELECTORS.ORDER_NUMBER).should('be.visible');
+    });
+
+    it('должен отобразить корректный номер заказа в модальном окне', () => {
+      // Добавляем ингредиенты в конструктор
+      cy.addBunToConstructor();
+      cy.addMainIngredientToConstructor();
+      
+      // Создаем заказ
+      cy.createOrder();
+      
+      // Ждем создания заказа
+      cy.wait('@createOrder');
+      
+      // Проверяем, что отображается корректный номер заказа
+      cy.fixture('order.json').then((orderData) => {
+        cy.get(SELECTORS.ORDER_NUMBER).should('contain.text', orderData.order.number);
+      });
     });
 
     it('должен закрыть модальное окно заказа и очистить конструктор', () => {
