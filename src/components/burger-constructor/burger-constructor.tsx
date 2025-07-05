@@ -1,11 +1,15 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import { useSelector, useDispatch } from '../../services/store';
 import { createOrder, clearOrder } from '../../services/slices/orderSlice';
-import { clearConstructor } from '../../services/slices/constructorSlice';
+import {
+  clearConstructor,
+  addIngredient
+} from '../../services/slices/constructorSlice';
 import { fetchFeeds } from '../../services/slices/feedSlice';
+import { fetchIngredients } from '../../services/slices/ingredientsSlice';
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
@@ -14,6 +18,29 @@ export const BurgerConstructor: FC = () => {
   const constructorItems = useSelector((state) => state.burgerConstructor);
   const { orderRequest, orderModalData } = useSelector((state) => state.order);
   const { isAuthenticated } = useSelector((state) => state.user);
+  const { ingredients } = useSelector((state) => state.ingredients);
+
+  // Загружаем ингредиенты при инициализации
+  useEffect(() => {
+    if (ingredients.length === 0) {
+      dispatch(fetchIngredients());
+    }
+  }, [dispatch, ingredients.length]);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const ingredientType = e.dataTransfer.getData('text/plain');
+    console.log('Dropped ingredient type:', ingredientType);
+
+    const ingredientToAdd = ingredients.find(
+      (ing) => ing.type === ingredientType
+    );
+
+    if (ingredientToAdd) {
+      dispatch(addIngredient(ingredientToAdd));
+    }
+  };
+
   const onOrderClick = () => {
     if (!constructorItems.bun || orderRequest) return;
 
@@ -57,6 +84,7 @@ export const BurgerConstructor: FC = () => {
       orderModalData={orderModalData}
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
+      onDrop={handleDrop}
     />
   );
 };
