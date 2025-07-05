@@ -21,7 +21,7 @@ export const BurgerIngredientUI: FC<TBurgerIngredientUIProps> = memo(
         data-ingredient-type={type}
         draggable
         onDragStart={(e) => {
-          e.dataTransfer.setData('text/plain', type);
+          e.dataTransfer.setData('text/plain', _id);
         }}
       >
         <Link

@@ -18,23 +18,21 @@ export const BurgerConstructor: FC = () => {
   const constructorItems = useSelector((state) => state.burgerConstructor);
   const { orderRequest, orderModalData } = useSelector((state) => state.order);
   const { isAuthenticated } = useSelector((state) => state.user);
-  const { ingredients } = useSelector((state) => state.ingredients);
+  const { ingredients, loading } = useSelector((state) => state.ingredients);
 
   // Загружаем ингредиенты при инициализации
   useEffect(() => {
-    if (ingredients.length === 0) {
+    if (ingredients.length === 0 && !loading) {
       dispatch(fetchIngredients());
     }
-  }, [dispatch, ingredients.length]);
+  }, [dispatch, ingredients.length, loading]);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    const ingredientType = e.dataTransfer.getData('text/plain');
-    console.log('Dropped ingredient type:', ingredientType);
+    const ingredientId = e.dataTransfer.getData('text/plain');
+    console.log('Dropped ingredient id:', ingredientId);
 
-    const ingredientToAdd = ingredients.find(
-      (ing) => ing.type === ingredientType
-    );
+    const ingredientToAdd = ingredients.find((ing) => ing._id === ingredientId);
 
     if (ingredientToAdd) {
       dispatch(addIngredient(ingredientToAdd));
