@@ -120,7 +120,9 @@ describe('orderSlice', () => {
   describe('последовательность экшенов', () => {
     it('должен правильно обрабатывать полный цикл создания заказа', () => {
       // Начало запроса
-      let state = orderReducer(initialState, { type: createOrder.pending.type });
+      let state = orderReducer(initialState, {
+        type: createOrder.pending.type
+      });
       expect(state.orderRequest).toBe(true);
       expect(state.error).toBeNull();
 
@@ -137,7 +139,9 @@ describe('orderSlice', () => {
 
     it('должен правильно обрабатывать ошибку создания заказа', () => {
       // Начало запроса
-      let state = orderReducer(initialState, { type: createOrder.pending.type });
+      let state = orderReducer(initialState, {
+        type: createOrder.pending.type
+      });
       expect(state.orderRequest).toBe(true);
 
       // Ошибка
@@ -189,4 +193,4 @@ describe('orderSlice', () => {
       expect(newState.order).toEqual(mockOrder); // Заказ сохраняется
     });
   });
-}); 
+});

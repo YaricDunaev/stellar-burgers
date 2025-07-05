@@ -58,7 +58,11 @@ describe('constructorSlice', () => {
         ingredients: []
       };
 
-      const newBun = { ...mockIngredient, _id: 'new-bun-id', name: 'Новая булка' };
+      const newBun = {
+        ...mockIngredient,
+        _id: 'new-bun-id',
+        name: 'Новая булка'
+      };
       const action = addIngredient(newBun);
       const newState = constructorReducer(stateWithBun, action);
 
@@ -113,9 +117,7 @@ describe('constructorSlice', () => {
     it('не должен удалить ингредиент с неправильным id', () => {
       const stateWithIngredients = {
         bun: null,
-        ingredients: [
-          { ...mockMainIngredient, id: 'ingredient-1' }
-        ]
+        ingredients: [{ ...mockMainIngredient, id: 'ingredient-1' }]
       };
 
       const action = removeIngredient('wrong-id');
@@ -192,4 +194,4 @@ describe('constructorSlice', () => {
       expect(newState).toEqual(initialState);
     });
   });
-}); 
+});

@@ -58,7 +58,10 @@ describe('feedSlice', () => {
 
   describe('fetchFeeds.rejected', () => {
     it('должен установить ошибку при неудачной загрузке', () => {
-      const action = { type: fetchFeeds.rejected.type, error: { message: 'Ошибка' } };
+      const action = {
+        type: fetchFeeds.rejected.type,
+        error: { message: 'Ошибка' }
+      };
       const newState = feedReducer(initialState, action);
       expect(newState.loading).toBe(false);
       expect(newState.error).toBe('Ошибка');
@@ -74,7 +77,10 @@ describe('feedSlice', () => {
 
   describe('fetchUserOrders.fulfilled', () => {
     it('должен обновить список заказов пользователя', () => {
-      const action = { type: fetchUserOrders.fulfilled.type, payload: mockOrders };
+      const action = {
+        type: fetchUserOrders.fulfilled.type,
+        payload: mockOrders
+      };
       const newState = feedReducer(initialState, action);
       expect(newState.orders).toEqual(mockOrders);
     });
@@ -87,4 +93,4 @@ describe('feedSlice', () => {
       expect(newState).toEqual(initialState);
     });
   });
-}); 
+});

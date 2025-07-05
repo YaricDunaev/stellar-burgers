@@ -115,7 +115,9 @@ describe('ingredientsSlice', () => {
   describe('последовательность экшенов', () => {
     it('должен правильно обрабатывать полный цикл загрузки ингредиентов', () => {
       // Начало запроса
-      let state = ingredientsReducer(initialState, { type: fetchIngredients.pending.type });
+      let state = ingredientsReducer(initialState, {
+        type: fetchIngredients.pending.type
+      });
       expect(state.loading).toBe(true);
       expect(state.error).toBeNull();
 
@@ -131,7 +133,9 @@ describe('ingredientsSlice', () => {
 
     it('должен правильно обрабатывать ошибку после начала запроса', () => {
       // Начало запроса
-      let state = ingredientsReducer(initialState, { type: fetchIngredients.pending.type });
+      let state = ingredientsReducer(initialState, {
+        type: fetchIngredients.pending.type
+      });
       expect(state.loading).toBe(true);
 
       // Ошибка

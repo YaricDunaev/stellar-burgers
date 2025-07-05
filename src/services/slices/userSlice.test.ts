@@ -1,4 +1,10 @@
-import userReducer, { getUser, setAuthChecked, clearUserErrors, setUser, setAuthenticated } from './userSlice';
+import userReducer, {
+  getUser,
+  setAuthChecked,
+  clearUserErrors,
+  setUser,
+  setAuthenticated
+} from './userSlice';
 
 const mockUser = {
   email: 'test@example.com',
@@ -145,4 +151,4 @@ describe('userSlice', () => {
       expect(state.isAuthenticated).toBe(false);
     });
   });
-}); 
+});
