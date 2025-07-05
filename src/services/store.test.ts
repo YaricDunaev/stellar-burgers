@@ -1,4 +1,9 @@
 import { rootReducer } from './store';
+import { initialState as constructorInitialState } from './slices/constructorSlice';
+import { initialState as ingredientsInitialState } from './slices/ingredientsSlice';
+import { initialState as orderInitialState } from './slices/orderSlice';
+import { initialState as userInitialState } from './slices/userSlice';
+import { initialState as feedInitialState } from './slices/feedSlice';
 
 describe('rootReducer', () => {
   it('должен вернуть корректное начальное состояние при вызове с undefined состоянием и неизвестным экшеном', () => {
@@ -17,44 +22,18 @@ describe('rootReducer', () => {
     expect(initialState).toHaveProperty('feed');
 
     // Проверяем начальное состояние конструктора
-    expect(initialState.burgerConstructor).toEqual({
-      bun: null,
-      ingredients: []
-    });
+    expect(initialState.burgerConstructor).toEqual(constructorInitialState);
 
     // Проверяем начальное состояние ингредиентов
-    expect(initialState.ingredients).toEqual({
-      ingredients: [],
-      loading: false,
-      error: null
-    });
+    expect(initialState.ingredients).toEqual(ingredientsInitialState);
 
     // Проверяем начальное состояние заказа
-    expect(initialState.order).toEqual({
-      order: null,
-      orderRequest: false,
-      orderModalData: null,
-      error: null
-    });
+    expect(initialState.order).toEqual(orderInitialState);
 
     // Проверяем начальное состояние пользователя
-    expect(initialState.user).toEqual({
-      user: null,
-      isAuthenticated: false,
-      isAuthChecked: false,
-      loginUserRequest: false,
-      loginUserError: null,
-      registerUserRequest: false,
-      registerUserError: null
-    });
+    expect(initialState.user).toEqual(userInitialState);
 
     // Проверяем начальное состояние ленты
-    expect(initialState.feed).toEqual({
-      orders: [],
-      total: 0,
-      totalToday: 0,
-      loading: false,
-      error: null
-    });
+    expect(initialState.feed).toEqual(feedInitialState);
   });
 });

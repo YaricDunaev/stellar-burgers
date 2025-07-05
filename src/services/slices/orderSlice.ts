@@ -79,4 +79,5 @@ const orderSlice = createSlice({
 
 export const { clearOrder, setOrderModalData, clearOrderModalData } =
   orderSlice.actions;
+export { initialState };
 export default orderSlice.reducer;

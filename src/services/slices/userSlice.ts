@@ -68,4 +68,5 @@ const userSlice = createSlice({
 
 export const { setAuthChecked, clearUserErrors, setUser, setAuthenticated } =
   userSlice.actions;
+export { initialState };
 export default userSlice.reducer;
