@@ -1,3 +1,30 @@
+// Константы для тестов
+const INGREDIENT_IDS = {
+  BUN: '643d69a5c3f7b9001cfa093c',
+  MAIN: '643d69a5c3f7b9001cfa093e',
+  SAUCE: '643d69a5c3f7b9001cfa0942'
+} as const;
+
+const SELECTORS = {
+  INGREDIENT_ITEM: '[data-testid="ingredient-item"]',
+  BUN_ITEM: '[data-testid="ingredient-item"][data-ingredient-type="bun"]',
+  MAIN_ITEM: '[data-testid="ingredient-item"][data-ingredient-type="main"]',
+  SAUCE_ITEM: '[data-testid="ingredient-item"][data-ingredient-type="sauce"]',
+  CONSTRUCTOR_DROP_ZONE: '[data-testid="constructor-drop-zone"]',
+  CONSTRUCTOR_BUN_TOP: '[data-testid="constructor-bun-top"]',
+  CONSTRUCTOR_BUN_BOTTOM: '[data-testid="constructor-bun-bottom"]',
+  CONSTRUCTOR_INGREDIENT: '[data-testid="constructor-ingredient"]',
+  ORDER_BUTTON: '[data-testid="order-button"]',
+  ORDER_MODAL: '[data-testid="order-modal"]',
+  ORDER_NUMBER: '[data-testid="order-number"]',
+  MODAL: '[data-testid="modal"]',
+  MODAL_CLOSE: '[data-testid="modal-close"]',
+  MODAL_OVERLAY: '[data-testid="modal-overlay"]',
+  MODAL_TITLE: '[data-testid="modal-title"]',
+  MODAL_INGREDIENT_NAME: '[data-testid="modal-ingredient-name"]',
+  INGREDIENT_NAME: '[data-testid="ingredient-name"]'
+} as const;
+
 describe('Конструктор бургера', () => {
   beforeEach(() => {
     // Перехватываем запросы к API
@@ -14,103 +41,46 @@ describe('Конструктор бургера', () => {
 
   describe('Добавление ингредиентов в конструктор', () => {
     it('должен добавить булку в конструктор', () => {
-      // Находим первую булку и перетаскиваем в конструктор
-      cy.get('[data-testid="ingredient-item"][data-ingredient-type="bun"]').first().trigger('dragstart', {
-        dataTransfer: {
-          setData: () => {},
-          getData: () => '643d69a5c3f7b9001cfa093c'
-        }
-      });
-      cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
-        dataTransfer: {
-          getData: () => '643d69a5c3f7b9001cfa093c'
-        }
-      });
-      
-      // Проверяем, что булка появилась в конструкторе
-      cy.get('[data-testid="constructor-bun-top"]').should('be.visible');
-      cy.get('[data-testid="constructor-bun-bottom"]').should('be.visible');
+      cy.addBunToConstructor();
+      cy.checkBunAdded();
     });
 
     it('должен добавить начинку в конструктор', () => {
-      // Находим первую начинку и перетаскиваем в конструктор
-      cy.get('[data-testid="ingredient-item"][data-ingredient-type="main"]').first().trigger('dragstart', {
-        dataTransfer: {
-          setData: () => {},
-          getData: () => '643d69a5c3f7b9001cfa093e'
-        }
-      });
-      cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
-        dataTransfer: {
-          getData: () => '643d69a5c3f7b9001cfa093e'
-        }
-      });
-      
-      // Проверяем, что начинка появилась в конструкторе
-      cy.get('[data-testid="constructor-ingredient"]').should('be.visible');
+      cy.addMainIngredientToConstructor();
+      cy.checkIngredientAdded();
     });
 
     it('должен добавить соус в конструктор', () => {
-      // Находим первый соус и перетаскиваем в конструктор
-      cy.get('[data-testid="ingredient-item"][data-ingredient-type="sauce"]').first().trigger('dragstart', {
-        dataTransfer: {
-          setData: () => {},
-          getData: () => '643d69a5c3f7b9001cfa0942'
-        }
-      });
-      cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
-        dataTransfer: {
-          getData: () => '643d69a5c3f7b9001cfa0942'
-        }
-      });
-      
-      // Проверяем, что соус появился в конструкторе
-      cy.get('[data-testid="constructor-ingredient"]').should('be.visible');
+      cy.addSauceToConstructor();
+      cy.checkIngredientAdded();
     });
   });
 
   describe('Модальные окна ингредиентов', () => {
     it('должен открыть модальное окно при клике на ингредиент', () => {
-      // Кликаем на первый ингредиент
-      cy.get('[data-testid="ingredient-item"]').first().click();
-      
-      // Проверяем, что модальное окно открылось
-      cy.get('[data-testid="modal"]').should('be.visible');
-      cy.get('[data-testid="modal-title"]').should('contain', 'Детали ингредиента');
+      cy.openIngredientModal();
+      cy.get(SELECTORS.MODAL_TITLE).should('contain', 'Детали ингредиента');
     });
 
     it('должен закрыть модальное окно при клике на крестик', () => {
-      // Открываем модальное окно
-      cy.get('[data-testid="ingredient-item"]').first().click();
-      cy.get('[data-testid="modal"]').should('be.visible');
-      
-      // Кликаем на крестик
-      cy.get('[data-testid="modal-close"]').click();
-      
-      // Проверяем, что модальное окно закрылось
-      cy.get('[data-testid="modal"]').should('not.exist');
+      cy.openIngredientModal();
+      cy.closeModal();
     });
 
     it('должен закрыть модальное окно при клике на оверлей', () => {
-      // Открываем модальное окно
-      cy.get('[data-testid="ingredient-item"]').first().click();
-      cy.get('[data-testid="modal"]').should('be.visible');
-      
-      // Кликаем на оверлей
-      cy.get('[data-testid="modal-overlay"]').click({ force: true });
-      
-      // Проверяем, что модальное окно закрылось
-      cy.get('[data-testid="modal"]').should('not.exist');
+      cy.openIngredientModal();
+      cy.get(SELECTORS.MODAL_OVERLAY).click({ force: true });
+      cy.get(SELECTORS.MODAL).should('not.exist');
     });
 
     it('должен отображать данные правильного ингредиента в модальном окне', () => {
       // Получаем название первого ингредиента
-      cy.get('[data-testid="ingredient-item"]').first().find('[data-testid="ingredient-name"]').invoke('text').then((ingredientName) => {
+      cy.get(SELECTORS.INGREDIENT_ITEM).first().find(SELECTORS.INGREDIENT_NAME).invoke('text').then((ingredientName) => {
         // Кликаем на ингредиент
-        cy.get('[data-testid="ingredient-item"]').first().click();
+        cy.get(SELECTORS.INGREDIENT_ITEM).first().click();
         
         // Проверяем, что в модальном окне отображается правильное название
-        cy.get('[data-testid="modal-ingredient-name"]').should('contain', ingredientName);
+        cy.get(SELECTORS.MODAL_INGREDIENT_NAME).should('contain', ingredientName);
       });
     });
   });
@@ -133,87 +103,38 @@ describe('Конструктор бургера', () => {
     });
 
     it('должен создать заказ и отобразить модальное окно с номером заказа', () => {
-      // Добавляем булку в конструктор
-      cy.get('[data-testid="ingredient-item"][data-ingredient-type="bun"]').first().trigger('dragstart', {
-        dataTransfer: {
-          setData: () => {},
-          getData: () => '643d69a5c3f7b9001cfa093c'
-        }
-      });
-      cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
-        dataTransfer: {
-          getData: () => '643d69a5c3f7b9001cfa093c'
-        }
-      });
+      // Добавляем ингредиенты в конструктор
+      cy.addBunToConstructor();
+      cy.addMainIngredientToConstructor();
       
-      // Добавляем начинку в конструктор
-      cy.get('[data-testid="ingredient-item"][data-ingredient-type="main"]').first().trigger('dragstart', {
-        dataTransfer: {
-          setData: () => {},
-          getData: () => '643d69a5c3f7b9001cfa093e'
-        }
-      });
-      cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
-        dataTransfer: {
-          getData: () => '643d69a5c3f7b9001cfa093e'
-        }
-      });
-      
-      // Проверяем, что кнопка "Оформить заказ" активна
-      cy.get('[data-testid="order-button"]').should('not.be.disabled');
-      
-      // Кликаем на кнопку "Оформить заказ"
-      cy.get('[data-testid="order-button"]').click();
-      
-      // Проверяем, что модальное окно заказа открылось
-      cy.get('[data-testid="order-modal"]').should('be.visible');
+      // Создаем заказ
+      cy.createOrder();
       
       // Проверяем, что номер заказа отображается
-      cy.get('[data-testid="order-number"]').should('be.visible');
+      cy.get(SELECTORS.ORDER_NUMBER).should('be.visible');
     });
 
     it('должен закрыть модальное окно заказа и очистить конструктор', () => {
       // Добавляем ингредиенты в конструктор
-      cy.get('[data-testid="ingredient-item"][data-ingredient-type="bun"]').first().trigger('dragstart', {
-        dataTransfer: {
-          setData: () => {},
-          getData: () => '643d69a5c3f7b9001cfa093c'
-        }
-      });
-      cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
-        dataTransfer: {
-          getData: () => '643d69a5c3f7b9001cfa093c'
-        }
-      });
-      cy.get('[data-testid="ingredient-item"][data-ingredient-type="main"]').first().trigger('dragstart', {
-        dataTransfer: {
-          setData: () => {},
-          getData: () => '643d69a5c3f7b9001cfa093e'
-        }
-      });
-      cy.get('[data-testid="constructor-drop-zone"]').trigger('drop', {
-        dataTransfer: {
-          getData: () => '643d69a5c3f7b9001cfa093e'
-        }
-      });
+      cy.addBunToConstructor();
+      cy.addMainIngredientToConstructor();
       
       // Создаем заказ
-      cy.get('[data-testid="order-button"]').click();
-      cy.get('[data-testid="order-modal"]').should('be.visible');
+      cy.createOrder();
       
       // Ждем создания заказа
       cy.wait('@createOrder');
       
       // Закрываем модальное окно заказа
-      cy.get('[data-testid="modal-close"]').click();
+      cy.get(SELECTORS.MODAL_CLOSE).click();
       
       // Проверяем, что модальное окно заказа закрылось
-      cy.get('[data-testid="order-modal"]').should('not.exist');
+      cy.get(SELECTORS.ORDER_MODAL).should('not.exist');
       
       // Проверяем, что конструктор очистился
-      cy.get('[data-testid="constructor-bun-top"]').should('not.exist');
-      cy.get('[data-testid="constructor-bun-bottom"]').should('not.exist');
-      cy.get('[data-testid="constructor-ingredient"]').should('not.exist');
+      cy.get(SELECTORS.CONSTRUCTOR_BUN_TOP).should('not.exist');
+      cy.get(SELECTORS.CONSTRUCTOR_BUN_BOTTOM).should('not.exist');
+      cy.get(SELECTORS.CONSTRUCTOR_INGREDIENT).should('not.exist');
     });
   });
 }); 
