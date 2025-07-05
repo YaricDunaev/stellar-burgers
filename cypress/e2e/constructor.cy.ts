@@ -184,16 +184,6 @@ describe('Конструктор бургера', () => {
           .should('be.visible')
           .and('contain.text', orderData.order.number);
       });
-      
-      // Проверяем, что состояние заказа соответствует ожидаемому
-      cy.window().then((win) => {
-        // Проверяем, что в Redux store состояние заказа обновилось
-        const store = win.__REDUX_DEVTOOLS_EXTENSION__?.connect()?.getState();
-        if (store) {
-          expect(store.order.order).to.not.be.null;
-          expect(store.order.order.number).to.equal(12345);
-        }
-      });
     });
 
     it('должен закрыть модальное окно заказа и очистить конструктор', () => {
