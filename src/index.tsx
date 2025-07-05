@@ -8,9 +8,12 @@ import store from './services/store';
 const container = document.getElementById('root') as HTMLElement;
 const root = ReactDOMClient.createRoot(container!);
 
+const basename =
+  process.env.NODE_ENV === 'production' ? '/stellar-burgers' : '';
+
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <Provider store={store}>
         <App />
       </Provider>
