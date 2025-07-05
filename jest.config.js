@@ -36,6 +36,5 @@ module.exports = {
         jsx: 'react-jsx'
       }
     }
-  },
-  setupFiles: ['<rootDir>/src/setupTests.ts']
+  }
 }; 
