@@ -1,24 +1,68 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
+import { useSelector, useDispatch } from '../../services/store';
+import { createOrder, clearOrder } from '../../services/slices/orderSlice';
+import {
+  clearConstructor,
+  addIngredient
+} from '../../services/slices/constructorSlice';
+import { fetchFeeds } from '../../services/slices/feedSlice';
+import { fetchIngredients } from '../../services/slices/ingredientsSlice';
 
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-  const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const constructorItems = useSelector((state) => state.burgerConstructor);
+  const { orderRequest, orderModalData } = useSelector((state) => state.order);
+  const { isAuthenticated } = useSelector((state) => state.user);
+  const { ingredients, loading } = useSelector((state) => state.ingredients);
+
+  // Загружаем ингредиенты при инициализации
+  useEffect(() => {
+    if (ingredients.length === 0 && !loading) {
+      dispatch(fetchIngredients());
+    }
+  }, [dispatch, ingredients.length, loading]);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const ingredientId = e.dataTransfer.getData('text/plain');
+    console.log('Dropped ingredient id:', ingredientId);
+
+    const ingredientToAdd = ingredients.find((ing) => ing._id === ingredientId);
+
+    if (ingredientToAdd) {
+      dispatch(addIngredient(ingredientToAdd));
+    }
   };
-
-  const orderRequest = false;
-
-  const orderModalData = null;
 
   const onOrderClick = () => {
     if (!constructorItems.bun || orderRequest) return;
+
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    const ingredientIds = [
+      constructorItems.bun._id,
+      ...constructorItems.ingredients.map((ingredient) => ingredient._id),
+      constructorItems.bun._id
+    ];
+
+    dispatch(createOrder(ingredientIds)).then((result) => {
+      if (createOrder.fulfilled.match(result)) {
+        dispatch(clearConstructor());
+      }
+    });
   };
-  const closeOrderModal = () => {};
+
+  const closeOrderModal = () => {
+    dispatch(clearOrder());
+  };
 
   const price = useMemo(
     () =>
@@ -30,8 +74,6 @@ export const BurgerConstructor: FC = () => {
     [constructorItems]
   );
 
-  return null;
-
   return (
     <BurgerConstructorUI
       price={price}
@@ -40,6 +82,7 @@ export const BurgerConstructor: FC = () => {
       orderModalData={orderModalData}
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
+      onDrop={handleDrop}
     />
   );
 };
